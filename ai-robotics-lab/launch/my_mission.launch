@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<node name="move_to" pkg="move_to" type="move_to" output="screen">
+    <remap from="cmd_vel" to="cmd_vel"/>
+</node>
+
+<node name="rqt_image_viewer" pkg="rqt_image_view" type="rqt_image_view" output="screen">
+    <remap from="TTRK/CameraMain/image" to="TTRK/CameraMain/image"/>
+</node>
+
+<node name="my_mission" pkg="ai_robotics_lab" type="my_mission.py" output="screen" />
+
+<node name="target_tracking_node" pkg="ros_target_tracking" type="target_tracking_node" output="screen">
+    <remap from="/TTRK/CameraMain/image" to="/image_local_raw"/>
+    <remap from="/TTRK/Motion_Controller" to="/follow/cmd_vel"/>
+</node>
+
+<node name="ff_wrapper" pkg="ai_robotics_lab" type="ff_wrapper.py" output="screen" />
+
+<node name="smach_viewer" pkg="smach_viewer" type="smach_viewer.py" />
+
+<node pkg="topic_tools" type="mux" name="mux_cmd_vel" respawn="true" respawn_delay="3"
+  args='/robot/motionvw
+    /move_to/cmd_vel
+    /stop/cmd_vel
+    /follow/cmd_vel mux:=mux_cmd_vel'
+/>
+
+
+<node pkg="rostopic" type="rostopic" name="pub_stop_cmd_vel" args="pub /stop/cmd_vel  geometry_msgs/Twist '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}' -r10" output="screen"/>
+
+</launch>

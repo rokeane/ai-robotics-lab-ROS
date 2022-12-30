@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<node name="move_to" pkg="move_to" type="move_to" output="screen">
+    <remap from="cmd_vel" to="cmd_vel"/>
+</node>
+
+<node name="mission_WP" pkg="ai_robotics_lab" type="mission_WP.py" output="screen" />
+<node name="smach_viewer" pkg="smach_viewer" type="smach_viewer.py" />
+
+<node pkg="topic_tools" type="mux" name="mux_cmd_vel" respawn="true" respawn_delay="3"
+  args='/robot/motionvw
+    /move_to/cmd_vel
+    /stop/cmd_vel
+    /follow/cmd_vel mux:=mux_cmd_vel'
+/>
+
+<node pkg="rostopic" type="rostopic" name="pub_test_follow" args="pub /follow/cmd_vel  geometry_msgs/Twist '{linear:  {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.2}}' -r10" output="screen"/>
+
+<node pkg="rostopic" type="rostopic" name="pub_stop_cmd_vel" args="pub /stop/cmd_vel  geometry_msgs/Twist '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}' -r10" output="screen"/>
+
+</launch>
